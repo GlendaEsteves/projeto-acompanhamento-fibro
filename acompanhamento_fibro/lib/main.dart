@@ -1,7 +1,46 @@
+import 'package:acompanhamento_fibro/botoes.dart';
 import 'package:flutter/material.dart';
+import './tela2.dart';
+import './sintomas.dart';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
+void main() async {
   runApp(const FibroApp());
+
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = openDatabase(
+    join(await getDatabasesPath(), 'sintomas_database.db'),
+    onCreate: (db, version) {
+      return db.execute(
+        'CREATE TABLE sintomas(nome TEXT, intensidade INTEGER, data INTEGER)',
+      );
+    },
+    version: 1,
+  );
+
+  Future<void> inserirSintoma(Sintoma sintoma) async {
+    final db = await database;
+    await db.insert(
+      'sintoma',
+      sintoma.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Sintoma>> sintoma() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('sintomas');
+
+    return List.generate(maps.length, (i) {
+      return Sintoma(
+          nome: maps[i]['nome'],
+          intensidade: maps[i]['intensidade'],
+          data: maps[i]['data']);
+    });
+  }
 }
 
 class FibroApp extends StatelessWidget {
@@ -39,6 +78,21 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  List<String> nomeSintoma = [
+    'Dores no corpo',
+    'Sensibilidade na Pele',
+    'Distúrbios do sono',
+    'Falta de concentração',
+    'Alterações gastrointestinais',
+    'Outro'
+  ];
+
+  nomeSintomasLoop() {
+    for (int i = 0; i < nomeSintoma.length; i++) {
+      return nomeSintoma[i];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,109 +111,22 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const Text(
-                'Quais sintomas você sentiu hoje?',
+                'O que você sentiu hoje?',
                 style: TextStyle(fontSize: 20),
               ),
               ListView(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
+                  ...nomeSintoma.map((t) => BotoesSintomas(t, () {
                         Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) => Tela2()));
-                      },
-                      child: Text('Dores no Corpo')),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Tela2()));
-                      },
-                      child: Text('Sensibilidade na Pele')),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Tela2()));
-                      },
-                      child: Text('Distúrbios do sono')),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Tela2()));
-                      },
-                      child: Text('Falta de concentração')),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Tela2()));
-                      },
-                      child: Text('Alterações gastrointestinais')),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Tela2()));
-                      },
-                      child: Text('Outro'))
+                      }))
                 ],
               )
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class Tela2 extends StatefulWidget {
-  @override
-  _Tela2State createState() => _Tela2State();
-}
-
-class _Tela2State extends State<Tela2> {
-  double valorSlider = 0;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const Text('Escolha a intensidade do seu sintoma'),
-          backgroundColor: Colors.blueAccent),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Slider(
-                max: 10.0,
-                divisions: 5,
-                value: valorSlider,
-                label: valorSlider.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    valorSlider = value;
-                  });
-                },
-              ),
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MyHomePage(
-                            title: 'Teste',
-                          )));
-                },
-                child: Text('Voltar'),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.blue,
-        child: Container(height: 50),
       ),
     );
   }
