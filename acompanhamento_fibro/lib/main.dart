@@ -30,11 +30,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _addSymptoms = 0;
+  int _addSintomas = 0;
+  double valorSlider = 0;
 
-  void _incrementCounter() {
+  void _() {
     setState(() {
-      _addSymptoms++;
+      _addSintomas++;
     });
   }
 
@@ -55,20 +56,110 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-                child: const Text(
-                  'Quais sintomas você sentiu hoje?',
-                  style: TextStyle(fontSize: 20),
-                ),
+              const Text(
+                'Quais sintomas você sentiu hoje?',
+                style: TextStyle(fontSize: 20),
               ),
+              ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Tela2()));
+                      },
+                      child: Text('Dores no Corpo')),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Tela2()));
+                      },
+                      child: Text('Sensibilidade na Pele')),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Tela2()));
+                      },
+                      child: Text('Distúrbios do sono')),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Tela2()));
+                      },
+                      child: Text('Falta de concentração')),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Tela2()));
+                      },
+                      child: Text('Alterações gastrointestinais')),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Tela2()));
+                      },
+                      child: Text('Outro'))
+                ],
+              )
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: null,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class Tela2 extends StatefulWidget {
+  @override
+  _Tela2State createState() => _Tela2State();
+}
+
+class _Tela2State extends State<Tela2> {
+  double valorSlider = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text('Escolha a intensidade do seu sintoma'),
+          backgroundColor: Colors.blueAccent),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Slider(
+                max: 10.0,
+                divisions: 5,
+                value: valorSlider,
+                label: valorSlider.round().toString(),
+                onChanged: (double value) {
+                  setState(() {
+                    valorSlider = value;
+                  });
+                },
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MyHomePage(
+                            title: 'Teste',
+                          )));
+                },
+                child: Text('Voltar'),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
+        child: Container(height: 50),
       ),
     );
   }
