@@ -1,9 +1,9 @@
 import 'package:acompanhamento_fibro/sintomas.dart';
-
-import './main.dart';
 import 'package:flutter/material.dart';
 
 class Tela2 extends StatefulWidget {
+  String sintomas;
+  Tela2({Key? key, required this.sintomas}) : super(key: key);
   @override
   _Tela2State createState() => _Tela2State();
 }
@@ -12,10 +12,11 @@ class _Tela2State extends State<Tela2> {
   double valorSlider = 0;
   @override
   Widget build(BuildContext context) {
+    var sintomas = widget.sintomas;
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Escolha a intensidade do seu sintoma',
-              style: TextStyle(fontSize: 18)),
+          title: Text('Descreva a Intensidade do Sintoma:\n$sintomas',
+              style: TextStyle(fontSize: 16)),
           backgroundColor: Colors.blueAccent),
       body: Center(
         child: Padding(
@@ -35,14 +36,16 @@ class _Tela2State extends State<Tela2> {
               ),
               FloatingActionButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MyHomePage(
-                            title: 'Acompanhamento de Sintomas da Fibromialgia',
-                          )));
                   var data = DateTime.now().millisecondsSinceEpoch;
                   var valorSliderEscolhido = valorSlider;
+
+                  var sintomaInstancia = Sintoma(
+                      nome: sintomas,
+                      intensidade: valorSliderEscolhido,
+                      data: data);
+                  Navigator.pop(context, sintomaInstancia);
                 },
-                child: Text('Voltar'),
+                child: const Icon(Icons.add),
               ),
             ],
           ),

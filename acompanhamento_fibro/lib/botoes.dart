@@ -9,7 +9,7 @@ class BotoesSintomas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: quandoSelecionado,
+        onPressed: (quandoSelecionado),
         child: Text(texto),
         style: ElevatedButton.styleFrom(
             primary: const Color.fromARGB(255, 7, 82, 143),

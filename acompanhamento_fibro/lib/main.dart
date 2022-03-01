@@ -41,6 +41,8 @@ void main() async {
           data: maps[i]['data']);
     });
   }
+
+  await inserirSintoma(resultado);
 }
 
 class FibroApp extends StatelessWidget {
@@ -53,30 +55,17 @@ class FibroApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:
-          const MyHomePage(title: 'Acompanhamento de Sintomas da Fibromialgia'),
+      home: MyHomePage(title: 'Acompanhamento de Sintomas da Fibromialgia'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _addSintomas = 0;
-  double valorSlider = 0;
-
-  void _() {
-    setState(() {
-      _addSintomas++;
-    });
-  }
+  var resultado;
 
   List<String> nomeSintoma = [
     'Dores no corpo',
@@ -87,12 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
     'Outro'
   ];
 
-  nomeSintomasLoop() {
-    for (int i = 0; i < nomeSintoma.length; i++) {
-      return nomeSintoma[i];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: Icon(Icons.home),
         centerTitle: true,
         title: Text(
-          widget.title,
+          'Acompanhamento de Sintomas da Fibromialgia',
           style: const TextStyle(fontSize: 15),
         ),
       ),
@@ -118,10 +101,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 children: [
-                  ...nomeSintoma.map((t) => BotoesSintomas(t, () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Tela2()));
-                      }))
+                  ...nomeSintoma
+                      .asMap()
+                      .entries
+                      .map((t) => BotoesSintomas(t.value, () async {
+                            resultado = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Tela2(
+                                        sintomas: t.value,
+                                      )),
+                            );
+                            if (t.value == 'Outro') {}
+                            print(t.value);
+                          }))
                 ],
               )
             ],
