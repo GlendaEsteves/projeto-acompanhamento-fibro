@@ -35,18 +35,17 @@ class _Tela2State extends State<Tela2> {
                 },
               ),
               FloatingActionButton(
-                onPressed: () {
-                  var data = DateTime.now().millisecondsSinceEpoch;
-                  var valorSliderEscolhido = valorSlider;
+                  onPressed: () {
+                    var data = DateTime.now().millisecondsSinceEpoch;
+                    var valorSliderEscolhido = valorSlider;
 
-                  var sintomaInstancia = Sintoma(
-                      nome: sintomas,
-                      intensidade: valorSliderEscolhido,
-                      data: data);
-                  Navigator.pop(context, sintomaInstancia);
-                },
-                child: const Icon(Icons.add),
-              ),
+                    var sintomaInstancia = Sintoma(
+                        nome: sintomas,
+                        intensidade: valorSliderEscolhido,
+                        data: data);
+                    Navigator.pop(context, sintomaInstancia);
+                  },
+                  child: const Icon(Icons.add)),
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import "dart:io" as io;
+import 'dart:io';
 import 'package:acompanhamento_fibro/sintomas.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -10,40 +11,43 @@ class SintomasDB {
   factory SintomasDB() => _instance;
   static Database? _db;
 
-  Future<Database> get db async => _db ?? await initDb();
+  Future<Database> get db async => _db ?? await _initDb();
 
   SintomasDB.internal();
 
   SintomasDB._privateConstructor();
   static final SintomasDB instance = SintomasDB._privateConstructor();
 
-  Future<Database> initDb() async {
-    io.Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentDirectory.path, "sintomasDB.db");
-    var sintDb = await openDatabase(path, version: 1);
-    return sintDb;
+  _initDb() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'sintomasDB');
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
-  Future criarTabela() async {
-    var dbSintomas = await SintomasDB().db;
-    var res = await dbSintomas.execute(
-      'CREATE TABLE IF NOT EXISTS Sintomas(nome TEXT, intensidade REAL, data INTEGER)',
-    );
-    return res;
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+          CREATE TABLE Sintomas (
+            nome TEXT NOT NULL,
+            intensidade REAL,
+            data INTEGER NOT NULL
+          )
+          ''');
   }
 
   Future<void> inserirSintomas(Sintoma sintoma) async {
-    final db = _db;
-    await db?.insert(
-      'Sintomas',
-      sintoma.toMap(),
-    );
+    final db = await instance.db;
+    await db.insert('Sintomas', sintoma.toMap());
     ConflictAlgorithm.replace;
   }
 
-  Future listarSintomas() async {
-    var dbClient = await SintomasDB().db;
-    final res = await dbClient.rawQuery("SELECT * FROM Sintomas");
-    return res;
+  Future<List<Sintoma>> listarSintoma() async {
+    final Database db = await instance.db;
+    final List<Map<String, dynamic>> maps = await db.query('Sintomas');
+    return List.generate(maps.length, (i) {
+      return Sintoma(
+          nome: maps[i]['nome'],
+          intensidade: maps[i]['intensidade'],
+          data: maps[i]['data']);
+    });
   }
 }

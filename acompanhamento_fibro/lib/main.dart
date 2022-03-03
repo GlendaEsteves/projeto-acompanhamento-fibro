@@ -1,48 +1,16 @@
+import 'dart:collection';
+
 import 'package:acompanhamento_fibro/botoes.dart';
+import 'package:acompanhamento_fibro/database_manager.dart';
+import 'package:acompanhamento_fibro/tela_grafico.dart';
 import 'package:flutter/material.dart';
-import './tela2.dart';
-import './sintomas.dart';
-import 'dart:async';
-import 'package:flutter/widgets.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'sintomas.dart';
+import 'tela_intensidade_sintomas.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 void main() async {
-  runApp(const FibroApp());
-
   WidgetsFlutterBinding.ensureInitialized();
-  final database = openDatabase(
-    join(await getDatabasesPath(), 'sintomas_database.db'),
-    onCreate: (db, version) {
-      return db.execute(
-        'CREATE TABLE sintomas(nome TEXT, intensidade INTEGER, data INTEGER)',
-      );
-    },
-    version: 1,
-  );
-
-  Future<void> inserirSintoma(Sintoma sintoma) async {
-    final db = await database;
-    await db.insert(
-      'sintoma',
-      sintoma.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<List<Sintoma>> sintoma() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('sintomas');
-
-    return List.generate(maps.length, (i) {
-      return Sintoma(
-          nome: maps[i]['nome'],
-          intensidade: maps[i]['intensidade'],
-          data: maps[i]['data']);
-    });
-  }
-
-  await inserirSintoma(resultado);
+  runApp(const FibroApp());
 }
 
 class FibroApp extends StatelessWidget {
@@ -60,12 +28,19 @@ class FibroApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
-  var resultado;
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final sintDB = SintomasDB.instance;
+
+  var _resultado;
 
   List<String> nomeSintoma = [
     'Dores no corpo',
@@ -76,15 +51,42 @@ class MyHomePage extends StatelessWidget {
     'Outro'
   ];
 
+  late List<Sintoma> lista;
+
+  List<charts.Series<Sintoma, String>> _createSampleData() {
+    var date = DateTime.now();
+
+    sintDB.listarSintoma().then((value) {
+      setState(() {
+        lista = value;
+        print(lista);
+      });
+    });
+
+    print(lista.map((e) => (e.data)));
+
+    final data = lista;
+
+    return [
+      charts.Series<Sintoma, String>(
+        id: 'Sintomas',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (Sintoma sintomas, _) => sintomas.nome,
+        measureFn: (Sintoma sintomas, _) => sintomas.intensidade,
+        data: data,
+      )
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.home),
+        leading: const Icon(Icons.home),
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Acompanhamento de Sintomas da Fibromialgia',
-          style: const TextStyle(fontSize: 15),
+          style: TextStyle(fontSize: 15),
         ),
       ),
       body: Center(
@@ -105,18 +107,28 @@ class MyHomePage extends StatelessWidget {
                       .asMap()
                       .entries
                       .map((t) => BotoesSintomas(t.value, () async {
-                            resultado = await Navigator.push(
+                            _resultado = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Tela2(
                                         sintomas: t.value,
                                       )),
                             );
-                            if (t.value == 'Outro') {}
-                            print(t.value);
+                            await sintDB.inserirSintomas(_resultado);
+                            print(await sintDB.listarSintoma());
                           }))
                 ],
-              )
+              ),
+              FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              TelaGrafico(_createSampleData())),
+                    );
+                  },
+                  child: const Icon(Icons.addchart_rounded)),
             ],
           ),
         ),
