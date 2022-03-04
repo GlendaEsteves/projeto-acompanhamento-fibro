@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:acompanhamento_fibro/botoes.dart';
 import 'package:acompanhamento_fibro/database_manager.dart';
 import 'package:acompanhamento_fibro/tela_grafico.dart';
@@ -51,30 +49,53 @@ class _MyHomePageState extends State<MyHomePage> {
     'Outro'
   ];
 
-  late List<Sintoma> lista;
+  List<Sintoma> lista = [];
+  List<Sintoma> lista2 = [];
 
   List<charts.Series<Sintoma, String>> _createSampleData() {
     var date = DateTime.now();
+    var date2 = DateTime(date.year, date.month, date.day);
 
     sintDB.listarSintoma().then((value) {
       setState(() {
         lista = value;
-        print(lista);
       });
     });
 
-    print(lista.map((e) => (e.data)));
+    var datas = lista.map((e) => (e.data)).toList();
+    List datasAux = [];
+    List datasAux3 = [];
+    List datasAux4 = [];
+    datas.forEach((element) {
+      datasAux.add(element);
+    });
 
-    final data = lista;
+    for (int i = 0; i < datasAux.length; i++) {
+      var datasAux2 = DateTime.fromMillisecondsSinceEpoch(datasAux[i]);
+      datasAux3.add(datasAux2);
+      DateTime aux =
+          DateTime(datasAux3[i].year, datasAux3[i].month, datasAux3[i].day);
+      datasAux4.add(aux);
+    }
+
+    for (var j = 0; j < datasAux4.length; j++) {
+      if (date2 == datasAux4[j]) {
+        for (int k = 0; k < lista.length; k++) {
+          lista2.add(lista[j]);
+        }
+      }
+    }
+
+    final data = lista2;
 
     return [
       charts.Series<Sintoma, String>(
-        id: 'Sintomas',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (Sintoma sintomas, _) => sintomas.nome,
-        measureFn: (Sintoma sintomas, _) => sintomas.intensidade,
-        data: data,
-      )
+          id: 'Sintomas',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (Sintoma sintomas, _) => sintomas.nome,
+          measureFn: (Sintoma sintomas, _) => sintomas.intensidade,
+          data: data,
+          labelAccessorFn: (Sintoma sintomas, _) => sintomas.nome)
     ];
   }
 
@@ -115,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                       )),
                             );
                             await sintDB.inserirSintomas(_resultado);
-                            print(await sintDB.listarSintoma());
                           }))
                 ],
               ),

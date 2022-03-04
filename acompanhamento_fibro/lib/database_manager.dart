@@ -1,4 +1,3 @@
-import "dart:io" as io;
 import 'dart:io';
 import 'package:acompanhamento_fibro/sintomas.dart';
 import 'package:sqflite/sqflite.dart';

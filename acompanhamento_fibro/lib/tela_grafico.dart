@@ -1,4 +1,3 @@
-import 'package:acompanhamento_fibro/sintomas.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
@@ -9,9 +8,18 @@ class TelaGrafico extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return charts.BarChart(
-      seriesList,
-      animate: animate,
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      color: Colors.white,
+      child: charts.BarChart(
+        seriesList,
+        animate: animate,
+        vertical: false,
+        barRendererDecorator: charts.BarLabelDecorator<String>(),
+        domainAxis: const charts.OrdinalAxisSpec(
+          renderSpec: charts.NoneRenderSpec(),
+        ),
+      ),
     );
   }
 }

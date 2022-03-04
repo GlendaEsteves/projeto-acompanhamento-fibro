@@ -9,6 +9,7 @@ class Sintoma {
     return {'nome': nome, 'intensidade': intensidade, 'data': data};
   }
 
+  @override
   String toString() {
     return 'Sintoma{nome: $nome, intensidade: $intensidade, data: $data}';
   }
