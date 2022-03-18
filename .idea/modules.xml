@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/projeto_flutter_acompanhamento_fibro.iml" filepath="$PROJECT_DIR$/.idea/projeto_flutter_acompanhamento_fibro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/acompanhamento_fibro.iml" filepath="$PROJECT_DIR$/acompanhamento_fibro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/acompanhamento_fibro_android.iml" filepath="$PROJECT_DIR$/android/acompanhamento_fibro_android.iml" />
     </modules>
   </component>
 </project>
