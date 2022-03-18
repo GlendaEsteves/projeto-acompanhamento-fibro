@@ -4,13 +4,13 @@ Projeto de aplicativo em Flutter que organiza um diário sobre os sintomas da fi
 
 Algumas imagens do projeto: 
 
-![Tela Inicial](/acompanhamento_fibro/assets/images/tela-inicial.png)
+![Tela Inicial](/assets/images/tela-inicial.png)
 
 
-![Tela Intensidade](/acompanhamento_fibro/assets/images/tela-intensidade.png)
+![Tela Intensidade](/assets/images/tela-intensidade.png)
 
 
-![Tela Gráfico](/acompanhamento_fibro/assets/images/tela-grafico.png)
+![Tela Gráfico](/assets/images/tela-grafico.png)
 
 
 Download da APK caso tenha interesse: [Diário Acompanhamento da Fibromialgia](https://drive.google.com/file/d/1giWFwlC_JPF7OQN4z-xftTHqppC5hyFg/view?usp=sharing).
